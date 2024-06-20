@@ -1,9 +1,15 @@
 using System.Reflection;
+using Core.Entities;
+using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Context;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,12 +45,16 @@ public static class DependencyInjection
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-
+        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IJwtProvider, JwtProvider>();
         return services;
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
+        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }
