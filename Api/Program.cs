@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());
+// builder.Services.AddAutoMapper(Assembly.GetEntryAssembly());
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
