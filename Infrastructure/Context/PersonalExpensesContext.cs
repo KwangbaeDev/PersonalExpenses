@@ -16,6 +16,8 @@ public class PersonalExpensesContext : DbContext
 
 
     public DbSet<User> Users { get; set; }
+    public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
+    public DbSet<Expense> Expenses { get; set; }
 
 
 

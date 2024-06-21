@@ -29,5 +29,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder
             .Property(u => u.UpdatedDatetime);
+
+        
+
+        builder
+            .HasMany(u => u.ExpenseCategories)
+            .WithOne(ec => ec.User)
+            .HasForeignKey(ec => ec.UserId);
     }
 }
