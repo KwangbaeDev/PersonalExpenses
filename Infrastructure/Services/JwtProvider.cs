@@ -17,64 +17,39 @@ namespace Infrastructure.Services;
 public class JwtProvider : IJwtProvider 
 {
     private readonly JwtOptions _jwtSettings;
-    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public JwtProvider(IOptions<JwtOptions> jwtSettings, IPasswordHasher<User> passwordHasher)
+    public JwtProvider(IOptions<JwtOptions> jwtSettings)
     {
         _jwtSettings = jwtSettings.Value;
-        _passwordHasher = passwordHasher;
     }
 
-    public async Task<DatosUsuarioDTO> GetToken(CreateLoginModel model)
-    {
-        DatosUsuarioDTO datosUsuarioDTO= new DatosUsuarioDTO();
-
-        var createLogin = model.Adapt<User>();
-
-        createLogin.Password = _passwordHasher.HashPassword(createLogin, model.Password);
-
-        var user = model.Adapt<User>();
-
-        var resultado = _passwordHasher.VerifyHashedPassword(user, user.Password, createLogin.Password);
-
-        if (resultado == PasswordVerificationResult.Success)
-        {
-            datosUsuarioDTO.EstaAutenticado = true;
-            JwtSecurityToken jwtSecurityToken = CreateJwtToken(user);
-            datosUsuarioDTO.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-            datosUsuarioDTO.Email =  user.Email;
-            datosUsuarioDTO.Name = user.Name;
-        }
-        return datosUsuarioDTO;
-
-    
-    }
-
-    private JwtSecurityToken CreateJwtToken(User user)
+    public string Generate(DatosUsuarioDTO user)
     {
         var roles = new List<string> { "User" };
-        var roleClaims = new List<Claim>();
-        foreach (var role in roles)
-        {
-            roleClaims.Add(new Claim(ClaimTypes.Role, role));
-        }
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Name),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim("uid", user.Id.ToString())
+        };
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
         }
-        .Union(roleClaims);
-        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
-        var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-        var jwtSecurityToken =  new JwtSecurityToken(
+
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+        var signInCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
             issuer: _jwtSettings.Issuer,
             audience: _jwtSettings.Audience,
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
-            signingCredentials: signingCredentials
+            signingCredentials: signInCredentials
             );
-        return jwtSecurityToken;
+
+        string tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return tokenValue;
     }
 }

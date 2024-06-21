@@ -6,17 +6,22 @@ namespace Api.Controllers;
 
 public class LoginController : BaseApiController
 {
+    private readonly ILoginService _loginService;
     private readonly IJwtProvider _jwtProvider;
 
-    public LoginController(IJwtProvider jwtProvider)
+    public LoginController(ILoginService loginService ,IJwtProvider jwtProvider)
     {
+        _loginService = loginService;
         _jwtProvider = jwtProvider;
     }
 
-    [HttpPost ("token")]
-    public async Task<IActionResult> GetToken(CreateLoginModel request)
+    [HttpPost ("auth")]
+    public async Task<IActionResult> AuthUser(CreateLoginModel request)
     {
-        var result = await _jwtProvider.GetToken(request);
+        var login = await _loginService.AuthUser(request);
+
+
+        var result = _jwtProvider.Generate(login);
         return Ok(result);
     }
 }

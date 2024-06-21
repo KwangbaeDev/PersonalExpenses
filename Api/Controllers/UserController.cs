@@ -1,5 +1,6 @@
 using Core.Interfaces.Services;
 using Core.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -24,6 +25,7 @@ public class UserController : BaseApiController
 
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var user = await _userService.GetById(id);

@@ -47,14 +47,15 @@ public static class DependencyInjection
     {
         services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddScoped<ILoginRepository, LoginRepository>();
         return services;
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddScoped<ILoginService, LoginService>();
 
         return services;
     }
