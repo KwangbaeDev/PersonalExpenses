@@ -7,6 +7,7 @@ public interface IUserService
 {
     Task<UserDTO> Add(CreateUserModel model);
     Task<UserDTO> GetById(int id);
+    Task<List<UserDTO>> GetFiltered(FilterUserModel filter);
     Task<List<UserDTO>> GetAll();
     Task<UserDTO> Update(UpdateUserModel model);
     Task<bool> Delete(int id);

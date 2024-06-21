@@ -19,10 +19,18 @@ public class UserService : IUserService
         return await _userRepository.Add(model);
     }
 
+
     public async Task<UserDTO> GetById(int id)
     {
         return await _userRepository.GetById(id);
     }
+
+
+    public async Task<List<UserDTO>> GetFiltered(FilterUserModel filter)
+    {
+        return await _userRepository.GetFiltered(filter);
+    }
+
 
     public async Task<List<UserDTO>> GetAll()
     {
@@ -34,8 +42,11 @@ public class UserService : IUserService
     {
         return await _userRepository.Update(model);
     }
+
+
     public async Task<bool> Delete(int id)
     {
         return await _userRepository.Delete(id);
     }
+
 }

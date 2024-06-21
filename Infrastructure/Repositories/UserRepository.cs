@@ -1,3 +1,4 @@
+using System.Linq;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Repositories;
@@ -42,10 +43,11 @@ public class UserRepository : IUserRepository
         return userDTO;
     }
 
+
     public async Task<UserDTO> GetById(int id)
     {
         var user = await _context.Users.FindAsync(id);
-        if (user == null)
+        if (user == null || user.IsDeleted == true)
         {
             throw new NotFoundException($"The user with the id: {id} does not exist");
         }
@@ -54,9 +56,39 @@ public class UserRepository : IUserRepository
         return userDTO;
     }
 
+
+    public async Task<List<UserDTO>> GetFiltered(FilterUserModel filter)
+    {
+        var query = _context.Users
+                                .Where(u => u.IsDeleted != true)
+                                .AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(u => u.Name.Contains(filter.Name));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Email))
+        {
+            query = query.Where(u => u.Email.Contains(filter.Email));
+        }
+
+        if (filter.PageIndex != -1) // con -1 se recupera todas las filas
+        {
+            query = query.Skip((filter.PageIndex -1) * filter.PageSize) 
+                         .Take(filter.PageSize);
+        }
+
+        var result = await query.ToListAsync();
+        return result.Adapt<List<UserDTO>>();
+    }
+
+
     public async Task<List<UserDTO>> GetAll()
     {
-        var user = await _context.Users.ToListAsync();
+        var user = await _context.Users
+                                    .Where(u => u.IsDeleted != true)
+                                    .ToListAsync();
 
         var userDTO = user.Adapt<List<UserDTO>>();
         return userDTO;
@@ -66,20 +98,21 @@ public class UserRepository : IUserRepository
     public async Task<UserDTO> Update(UpdateUserModel model)
     {
         var user = await _context.Users.FindAsync(model.Id);
-        if (user == null)
+        if (user == null || user.IsDeleted == true)
         {
             throw new NotFoundException($"The user with the id: {model.Id} does not exist");
         }
 
         model.Adapt(user);
+        user.Password = _passwordHasher.HashPassword(user, model.Password);
+        user.UpdatedDatetime = DateTime.Now;
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
-
         var userDTO = user.Adapt<UserDTO>();
-        return userDTO;
-
-        
+        return userDTO;  
     }
+
+
     public async Task<bool> Delete(int id)
     {
         var user = await _context.Users.FindAsync(id);
@@ -87,10 +120,11 @@ public class UserRepository : IUserRepository
         {
             throw new NotFoundException($"The user with the id: {id} does not exist");
         }
-        _context.Remove(user);
+
+        user.IsDeleted = true;
 
         var result = await _context.SaveChangesAsync();
         return result > 0;
-
     }
+
 }

@@ -23,7 +23,6 @@ public class UserController : BaseApiController
         return Ok(await _userService.Add(request));
     }
 
-
     [HttpGet("{id}")]
     [Authorize]
     public async Task<IActionResult> GetById([FromRoute] int id)
@@ -32,6 +31,15 @@ public class UserController : BaseApiController
         return Ok(user);
     }
 
+
+    [HttpGet("filtered")]
+    public async Task<IActionResult> GetFiltered([FromQuery] FilterUserModel filter)
+    {
+        var user = await _userService.GetFiltered(filter);
+        return Ok(user);
+    }
+
+
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
@@ -39,12 +47,14 @@ public class UserController : BaseApiController
         return Ok(user);
     }
 
+
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateUserModel request)
     {
         var user = await _userService.Update(request);
         return Ok(user);
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)

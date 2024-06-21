@@ -28,6 +28,7 @@ public class UserMappingConfiguration : IRegister
             .Map(dest => dest.UpdatedDatetime, src => src.UpdatedDatetime);
 
         
+        //Entidad hacia el DTO
         config.NewConfig<User, DatosUsuarioDTO>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Name, src => src.Name)
