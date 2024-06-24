@@ -57,7 +57,37 @@ public class UserRepository : IUserRepository
     }
 
 
-    public async Task<List<UserDTO>> GetFiltered(FilterUserModel filter)
+    // public async Task<(int totalSize, int totalPages, int page, int sizeRegisters, List<UserDTO>)> GetFiltered(FilterUserModel filter)
+    // {
+    //     var query = _context.Users
+    //                             .Where(u => u.IsDeleted != true)
+    //                             .AsQueryable();
+
+    //     if (!string.IsNullOrEmpty(filter.Name))
+    //     {
+    //         query = query.Where(u => u.Name.Contains(filter.Name));
+    //     }
+
+    //     if (!string.IsNullOrEmpty(filter.Email))
+    //     {
+    //         query = query.Where(u => u.Email.Contains(filter.Email));
+    //     }
+
+    //     var totalSize = await query.CountAsync();
+
+    //     var totalPages = totalSize / filter.PageSize;
+
+    //     var page = filter.PageIndex;
+
+    //     var sizeRegisters = filter.PageSize;
+
+    //     query = query.Skip((filter.PageIndex -1) * filter.PageSize) 
+    //                  .Take(filter.PageSize);
+
+    //     var result = await query.ToListAsync();
+    //     return (totalSize, totalPages, page, sizeRegisters,result.Adapt<List<UserDTO>>());
+    // }
+    public async Task<ListViewUserDTO> GetFiltered(FilterUserModel filter)
     {
         var query = _context.Users
                                 .Where(u => u.IsDeleted != true)
@@ -73,14 +103,14 @@ public class UserRepository : IUserRepository
             query = query.Where(u => u.Email.Contains(filter.Email));
         }
 
-        if (filter.PageIndex != -1) // con -1 se recupera todas las filas
-        {
-            query = query.Skip((filter.PageIndex -1) * filter.PageSize) 
-                         .Take(filter.PageSize);
-        }
+        var result = new ListViewUserDTO(pageIndex: filter.PageIndex, pageSize: filter.PageSize, list: query);
 
-        var result = await query.ToListAsync();
-        return result.Adapt<List<UserDTO>>();
+        query = query.Skip((filter.PageIndex -1) * filter.PageSize) 
+                     .Take(filter.PageSize);
+
+        var userlist = await query.ToListAsync();
+        result.List = userlist.Adapt<List<UserDTO>>();
+        return result;
     }
 
 

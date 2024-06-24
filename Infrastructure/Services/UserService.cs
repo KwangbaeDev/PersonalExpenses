@@ -26,11 +26,17 @@ public class UserService : IUserService
     }
 
 
-    public async Task<List<UserDTO>> GetFiltered(FilterUserModel filter)
+    // public async Task<(int totalSize, int totalPages, int page, int sizeRegisters, List<UserDTO>)> GetFiltered(FilterUserModel filter)
+    // {
+    //     var result = await _userRepository.GetFiltered(filter);
+    //     return (result.totalSize, result.totalPages, result.page, result.sizeRegisters, result.Item5);
+    // }
+    public async Task<ListViewUserDTO> GetFiltered(FilterUserModel filter)
     {
-        return await _userRepository.GetFiltered(filter);
+        var result = await _userRepository.GetFiltered(filter);
+        return result;
     }
-
+    
 
     public async Task<List<UserDTO>> GetAll()
     {
