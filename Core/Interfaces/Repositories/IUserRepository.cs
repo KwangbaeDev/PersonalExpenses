@@ -5,11 +5,10 @@ namespace Core.Interfaces.Repositories;
 
 public interface IUserRepository
 {
-    Task<UserDTO> Add(CreateUserModel model);
+    Task<string> Add(CreateUserModel model);
     Task<UserDTO> GetById(int id);
-    // Task<(int totalSize, int totalPages, int page, int sizeRegisters, List<UserDTO>)> GetFiltered(FilterUserModel filter);
     Task<ListViewUserDTO> GetFiltered(FilterUserModel filter);
     Task<List<UserDTO>> GetAll();
-    Task<UserDTO> Update(UpdateUserModel model);
+    Task<string> Update(UpdateUserModel model);
     Task<bool> Delete(int id);
 }

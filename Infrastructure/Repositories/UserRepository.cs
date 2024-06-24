@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.Linq;
 using Core.Entities;
+using Core.Helpers;
 using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Models;
@@ -22,7 +24,8 @@ public class UserRepository : IUserRepository
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<UserDTO> Add(CreateUserModel model)
+
+    public async Task<string> Add(CreateUserModel model)
     {
         var createUser = model.Adapt<User>();
 
@@ -39,8 +42,9 @@ public class UserRepository : IUserRepository
         _context.Users.Add(createUser);
         await _context.SaveChangesAsync();
 
-        var userDTO = createUser.Adapt<UserDTO>();
-        return userDTO;
+        model.Id = createUser.Id;
+
+        return $"The user with the id {model.Id} is still registered correctly.";
     }
 
 
@@ -57,36 +61,6 @@ public class UserRepository : IUserRepository
     }
 
 
-    // public async Task<(int totalSize, int totalPages, int page, int sizeRegisters, List<UserDTO>)> GetFiltered(FilterUserModel filter)
-    // {
-    //     var query = _context.Users
-    //                             .Where(u => u.IsDeleted != true)
-    //                             .AsQueryable();
-
-    //     if (!string.IsNullOrEmpty(filter.Name))
-    //     {
-    //         query = query.Where(u => u.Name.Contains(filter.Name));
-    //     }
-
-    //     if (!string.IsNullOrEmpty(filter.Email))
-    //     {
-    //         query = query.Where(u => u.Email.Contains(filter.Email));
-    //     }
-
-    //     var totalSize = await query.CountAsync();
-
-    //     var totalPages = totalSize / filter.PageSize;
-
-    //     var page = filter.PageIndex;
-
-    //     var sizeRegisters = filter.PageSize;
-
-    //     query = query.Skip((filter.PageIndex -1) * filter.PageSize) 
-    //                  .Take(filter.PageSize);
-
-    //     var result = await query.ToListAsync();
-    //     return (totalSize, totalPages, page, sizeRegisters,result.Adapt<List<UserDTO>>());
-    // }
     public async Task<ListViewUserDTO> GetFiltered(FilterUserModel filter)
     {
         var query = _context.Users
@@ -95,12 +69,12 @@ public class UserRepository : IUserRepository
 
         if (!string.IsNullOrEmpty(filter.Name))
         {
-            query = query.Where(u => u.Name.Contains(filter.Name));
+            query = query.Where(u => u.Name.ToLower().Contains(filter.Name.ToLower().NoAccent()));
         }
 
         if (!string.IsNullOrEmpty(filter.Email))
         {
-            query = query.Where(u => u.Email.Contains(filter.Email));
+            query = query.Where(u => u.Email.ToLower().Contains(filter.Email.ToLower().NoAccent()));
         }
 
         var result = new ListViewUserDTO(pageIndex: filter.PageIndex, pageSize: filter.PageSize, list: query);
@@ -125,7 +99,7 @@ public class UserRepository : IUserRepository
     }
 
 
-    public async Task<UserDTO> Update(UpdateUserModel model)
+    public async Task<string> Update(UpdateUserModel model)
     {
         var user = await _context.Users.FindAsync(model.Id);
         if (user == null || user.IsDeleted == true)
@@ -138,8 +112,8 @@ public class UserRepository : IUserRepository
         user.UpdatedDatetime = DateTime.Now;
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
-        var userDTO = user.Adapt<UserDTO>();
-        return userDTO;  
+
+        return $"The user has been successfully updated.";
     }
 
 
@@ -156,5 +130,4 @@ public class UserRepository : IUserRepository
         var result = await _context.SaveChangesAsync();
         return result > 0;
     }
-
 }

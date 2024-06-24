@@ -11,6 +11,7 @@ public class UserMappingConfiguration : IRegister
     {
         //Del Creation object hacia la entidad
         config.NewConfig<CreateUserModel, User>()
+            .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Name, src => src.Name)
             .Map(dest => dest.Email, src => src.Email)
             .Map(dest => dest.Password, src => src.Password)
@@ -22,10 +23,7 @@ public class UserMappingConfiguration : IRegister
         config.NewConfig<User, UserDTO>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Name, src => src.Name)
-            .Map(dest => dest.Email, src => src.Email)
-            .Map(dest => dest.Password, src => src.Password)
-            .Map(dest => dest.CreationDateTime, src => src.CreationDateTime)
-            .Map(dest => dest.UpdatedDatetime, src => src.UpdatedDatetime);
+            .Map(dest => dest.Email, src => src.Email);
 
         
         //Entidad hacia el DTO

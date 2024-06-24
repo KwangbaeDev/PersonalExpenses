@@ -14,7 +14,8 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    public async Task<UserDTO> Add(CreateUserModel model)
+
+    public async Task<string> Add(CreateUserModel model)
     {
         return await _userRepository.Add(model);
     }
@@ -44,7 +45,7 @@ public class UserService : IUserService
     }
 
 
-    public async Task<UserDTO> Update(UpdateUserModel model)
+    public async Task<string> Update(UpdateUserModel model)
     {
         return await _userRepository.Update(model);
     }
