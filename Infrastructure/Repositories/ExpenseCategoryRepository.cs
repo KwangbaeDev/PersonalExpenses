@@ -1,5 +1,7 @@
+using System.Net.Quic;
 using Core.Entities;
 using Core.Exceptions;
+using Core.Helpers;
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Request;
@@ -47,13 +49,29 @@ public class ExpenseCategoryRepository : IExpenseCategoryRepository
 
     public async Task<ListViewExpenseCategoryDTO> GetFiltered(FilterExpenseCategoryModel filter)
     {
-        // var query = _context.ExpenseCategories
-        //                                     .Include(ec => ec.User)
-        //                                     .Where(ec => ec.IsDeleted != true)
-        //                                     .AsQueryable();
-
-        throw new NotImplementedException();
+        var query = _context.ExpenseCategories
+                                            .Include(ec => ec.User)
+                                            .Where(ec => ec.IsDeleted != true)
+                                            .AsQueryable();
         
+        if(!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(ec => ec.Name.ToLower().Contains(filter.Name.ToLower().NoAccent()));
+        }
+
+        if(!string.IsNullOrEmpty(filter.Description))
+        {
+            query = query.Where(ec => ec.Description.ToLower().Contains(filter.Description.ToLower().NoAccent()));
+        }
+
+        var result = new ListViewExpenseCategoryDTO(pageIndex: filter.PageIndex, pageSize: filter.PageSize, list: query);
+
+        query = query.Skip((filter.PageIndex -1) * filter.PageSize)
+                     .Take(filter.PageSize);
+
+        var categoryList = await query.ToListAsync();
+        result.List = categoryList.Adapt<List<ExpenseCategoryDTO>>();
+        return result;
     }
 
 

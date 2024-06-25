@@ -25,9 +25,9 @@ public class ExpenseCategoryService : IExpenseCategoryService
         return await _expenseCategoryRepository.GetById(id);
     }
 
-    public Task<ListViewExpenseCategoryDTO> GetFiltered(FilterExpenseCategoryModel filter)
+    public async Task<ListViewExpenseCategoryDTO> GetFiltered(FilterExpenseCategoryModel filter)
     {
-        throw new NotImplementedException();
+        return  await _expenseCategoryRepository.GetFiltered(filter);
     }
 
     public async Task<string> Update(UpdateExpenseCategoryModel model)
