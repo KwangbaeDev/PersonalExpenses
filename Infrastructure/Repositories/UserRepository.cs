@@ -77,10 +77,12 @@ public class UserRepository : IUserRepository
             query = query.Where(u => u.Email.ToLower().Contains(filter.Email.ToLower().NoAccent()));
         }
 
-        var result = new ListViewUserDTO(pageIndex: filter.PageIndex, pageSize: filter.PageSize, list: query);
+        var count =  await query.CountAsync();
 
-        query = query.Skip((filter.PageIndex -1) * filter.PageSize) 
-                     .Take(filter.PageSize);
+        var result = new ListViewUserDTO(filter.PageIndex, filter.PageSize, count);
+
+        query = query.OrderBy(u => u.Id)
+                     .Paginate(filter.PageIndex, filter.PageSize);
 
         var userlist = await query.ToListAsync();
         result.List = userlist.Adapt<List<UserDTO>>();

@@ -10,12 +10,12 @@ public class ListViewUserDTO
     public int TotalPages { get; set; }
     public int TotalRegisters { get; set; }
 
-    public ListViewUserDTO(int pageIndex, int pageSize, IQueryable<User> list)
+    public ListViewUserDTO(int pageIndex, int pageSize, int count)
     {
         Page = pageIndex;
         SizeRegisters = pageSize;
-        TotalPages = (int)Math.Ceiling(list.Count() / (double)pageSize);
-        TotalRegisters = list.Count();
+        TotalPages = (int)Math.Ceiling( count / (double)pageSize);
+        TotalRegisters = count;
     }
 
 }

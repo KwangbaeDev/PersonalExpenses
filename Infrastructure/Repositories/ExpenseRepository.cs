@@ -66,13 +66,14 @@ public class ExpenseRepository : IExpenseRepository
             query = query.Where(e => e.Description.ToLower().Contains(filter.Description.ToLower().NoAccent()));
         }
 
-        var result = new ListViewExpenseDTO(pageIndex: filter.PageIndex, pageSize: filter.PageSize, list: query);
+        var count = await query.CountAsync();
 
-        query = query.Skip((filter.PageIndex -1) * filter.PageSize)
-                     .Take(filter.PageSize);
+        var result = new ListViewExpenseDTO(filter.PageIndex, filter.PageSize, count);
+
+        query = query.OrderBy(e => e.Id)
+                     .Paginate(filter.PageIndex, filter.PageSize);
 
         var expenseList = await query.ToListAsync();
-
         result.List = expenseList.Adapt<List<ExpenseDTO>>();
         return result;
     }

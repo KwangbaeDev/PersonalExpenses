@@ -1,4 +1,3 @@
-using System.Net.Quic;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Helpers;
@@ -64,11 +63,13 @@ public class ExpenseCategoryRepository : IExpenseCategoryRepository
             query = query.Where(ec => ec.Description.ToLower().Contains(filter.Description.ToLower().NoAccent()));
         }
 
-        var result = new ListViewExpenseCategoryDTO(pageIndex: filter.PageIndex, pageSize: filter.PageSize, list: query);
+        var count = await query.CountAsync();
 
-        query = query.Skip((filter.PageIndex -1) * filter.PageSize)
-                     .Take(filter.PageSize);
+        var result = new ListViewExpenseCategoryDTO(filter.PageIndex, filter.PageSize, count);
 
+        query = query.OrderBy(ec => ec.Id)
+                     .Paginate(filter.PageIndex, filter.PageSize);
+                     
         var categoryList = await query.ToListAsync();
         result.List = categoryList.Adapt<List<ExpenseCategoryDTO>>();
         return result;

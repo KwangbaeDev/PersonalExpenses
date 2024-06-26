@@ -10,12 +10,11 @@ public class ListViewExpenseCategoryDTO
     public int TotalPages { get; set; }
     public int TotalRegisters { get; set; }
 
-    public ListViewExpenseCategoryDTO(int pageIndex, int pageSize, IQueryable<ExpenseCategory> list)
+    public ListViewExpenseCategoryDTO(int pageIndex, int pageSize, int count)
     {
         Page = pageIndex;
         SizeRegisters = pageSize;
-        TotalPages = (int)Math.Ceiling(list.Count() / (double)pageSize);
-        TotalRegisters = list.Count();
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+        TotalRegisters = count;
     }
-    
 }
