@@ -15,7 +15,8 @@ public class ExpenseMappingConfiguration : IRegister
             .Map(dest => dest.Amount, src => src.Amount)
             .Map(dest => dest.ExpenseDatetime, src => DateTime.Now)
             .Map(dest => dest.Description, src => src.Description)
-            .Map(dest => dest.ExpenseCategoryId, src => src.ExpenseCategoryId);
+            .Map(dest => dest.ExpenseCategoryId, src => src.ExpenseCategoryId)
+            .Map(dest => dest.UserId, src => src.UserId);
 
 
         // De la Entidad al DTO

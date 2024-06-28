@@ -16,8 +16,15 @@ public class CreateExpenseCategoryValidation : AbstractValidator<CreateExpenseCa
 
         RuleFor(x => x.Description)
             .NotNull()
-            .WithMessage("Name cannot be null.")
+            .WithMessage("Description cannot be null.")
             .NotEmpty()
-            .WithMessage("Name cannot be empty.");
+            .WithMessage("Description cannot be empty.");
+
+
+        RuleFor(x => x.UserId)
+            .NotNull()
+            .WithMessage("UserId cannot be null.")
+            .NotEmpty()
+            .WithMessage("UserId cannot be empty.");
     }
 }

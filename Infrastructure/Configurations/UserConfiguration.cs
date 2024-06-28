@@ -36,5 +36,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMany(u => u.ExpenseCategories)
             .WithOne(ec => ec.User)
             .HasForeignKey(ec => ec.UserId);
+
+        builder
+            .HasMany(u => u.Expenses)
+            .WithOne(e => e.User)
+            .HasForeignKey(e => e.UserId);
     }
 }

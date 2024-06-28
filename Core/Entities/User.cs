@@ -9,4 +9,5 @@ public class User : BaseEntity
     public DateTime UpdatedDatetime { get; set; }
     public bool IsDeleted { get; set; }
     public ICollection<ExpenseCategory> ExpenseCategories { get; set; } = new List<ExpenseCategory>();
+    public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
 }

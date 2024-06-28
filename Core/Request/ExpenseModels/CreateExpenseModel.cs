@@ -9,4 +9,5 @@ public class CreateExpenseModel
     public decimal Amount { get; set; }
     public string Description { get; set; } = string.Empty;
     public int ExpenseCategoryId { get; set; }
+    public int UserId { get; set; }
 }

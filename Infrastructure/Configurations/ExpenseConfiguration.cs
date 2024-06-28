@@ -28,6 +28,11 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
         builder
             .HasOne(e => e.ExpenseCategory)
             .WithMany(ec => ec.Expenses)
-            .HasForeignKey(ec => ec.ExpenseCategoryId);
+            .HasForeignKey(e => e.ExpenseCategoryId);
+
+        builder
+            .HasOne(e => e.User)
+            .WithMany(u => u.Expenses)
+            .HasForeignKey(e => e.UserId);
     }
 }

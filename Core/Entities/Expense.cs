@@ -8,4 +8,6 @@ public class Expense : BaseEntity
     public bool IsDeleted { get; set; }
     public int ExpenseCategoryId { get; set; }
     public ExpenseCategory ExpenseCategory { get; set; } = null!;
+    public int UserId { get; set; }
+    public User User { get; set; } = null!;
 }

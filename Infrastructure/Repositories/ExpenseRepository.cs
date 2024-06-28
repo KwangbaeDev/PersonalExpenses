@@ -1,3 +1,4 @@
+using System.Net.Quic;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Helpers;
@@ -34,7 +35,10 @@ public class ExpenseRepository : IExpenseRepository
 
     public async Task<ExpenseDTO> GetById(int id)
     {
-        var expense = await _context.Expenses.FindAsync(id);
+        var expense = await _context.Expenses
+                                            .Include(e => e.ExpenseCategory)
+                                            .Include(e => e.User)
+                                            .FirstOrDefaultAsync(e => e.Id == id);
         if (expense == null || expense.IsDeleted == true)
         {
             throw new NotFoundException($"Spending with id {id} does not exist");
@@ -44,22 +48,28 @@ public class ExpenseRepository : IExpenseRepository
         return expenseDTO;
     }
 
+
     public async Task<ListViewExpenseDTO> GetFiltered(FilterExpenseModel filter)
     {
         var query = _context.Expenses.Include(e => e.ExpenseCategory)
-                                     .ThenInclude(e => e.User)
+                                     .Include(e => e.User)     
                                      .Where(e => e.IsDeleted != true)
                                      .AsQueryable();
-
-        // if(!string.IsNullOrEmpty(filter.Amount.ToString()))
-        // {
-        //     query = query.Where(e => e.Amount.ToString().Contains(filter.Amount.ToString()));
-        // }
 
         if (filter.Amount != null)
         {
             query = query.Where(e => e.Amount == filter.Amount);
         }
+
+        // if(filter.DateFrom != null)
+        // {
+        //     query = query.Where(e => e.ExpenseDatetime >= filter.DateFrom && e.ExpenseDatetime <= filter.DateFrom || e.ExpenseDatetime == filter.DateFrom && e.ExpenseDatetime == filter.DateTo);
+        // }
+
+        // if(filter.DateTo != null)
+        // {
+        //     query = query.Where(e => e.ExpenseDatetime <= filter.DateTo && e.ExpenseDatetime >= filter.DateFrom || e.ExpenseDatetime == filter.DateTo && e.ExpenseDatetime == filter);
+        // }
 
         if(!string.IsNullOrEmpty(filter.Description))
         {
@@ -78,6 +88,7 @@ public class ExpenseRepository : IExpenseRepository
         return result;
     }
 
+
     public async Task<string> Update(UpdateExpenseModel model)
     {
         var expense = await _context.Expenses.FindAsync(model.Id);
@@ -92,6 +103,8 @@ public class ExpenseRepository : IExpenseRepository
 
         return $"The expense was updated correctly";
     }
+
+
     public async Task<bool> Delete(int id)
     {
         var expense = await _context.Expenses.FindAsync(id);

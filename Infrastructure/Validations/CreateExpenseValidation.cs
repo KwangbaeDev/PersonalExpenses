@@ -21,5 +21,12 @@ public class CreateExpenseValidation : AbstractValidator<CreateExpenseModel>
             .WithMessage("ExpenseCategoryId cannot be null.")
             .NotEmpty()
             .WithMessage("ExpenseCategoryId cannot be empty.");
+
+
+        RuleFor(x => x.UserId)
+            .NotNull()
+            .WithMessage("UserId cannot be null.")
+            .NotEmpty()
+            .WithMessage("UserId cannot be empty.");
     }
 }

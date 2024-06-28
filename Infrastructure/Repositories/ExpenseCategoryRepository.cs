@@ -34,7 +34,9 @@ public class ExpenseCategoryRepository : IExpenseCategoryRepository
 
     public async Task<ExpenseCategoryDTO> GetById(int id)
     {
-        var expenseCategory = await _context.ExpenseCategories.FindAsync(id);
+        var expenseCategory = await _context.ExpenseCategories
+                                                            .Include(ec => ec.User)
+                                                            .FirstOrDefaultAsync(ec => ec.Id == id);
 
         if (expenseCategory == null || expenseCategory.IsDeleted == true)
         {
